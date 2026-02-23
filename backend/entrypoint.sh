@@ -23,15 +23,15 @@ try:
         dbname=os.environ.get('POSTGRES_DB') or os.environ.get('PGDATABASE', ''),
         user=os.environ.get('POSTGRES_USER') or os.environ.get('PGUSER', ''),
         password=os.environ.get('POSTGRES_PASSWORD') or os.environ.get('PGPASSWORD', ''),
-        sslmode=os.environ.get('PGSSLMODE', 'prefer'),
-        connect_timeout=5
+        sslmode=os.environ.get('PGSSLMODE', 'require'),
+        connect_timeout=10
     )
     conn.close()
     sys.exit(0)
 except Exception as e:
-    print(e, file=sys.stderr)
+    print('DB connection error:', e, file=sys.stderr)
     sys.exit(1)
-" 2>/dev/null
+"
 }
 
 
