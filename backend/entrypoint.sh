@@ -23,7 +23,7 @@ check_postgres() {
   db_name=$(get_env PGDATABASE POSTGRES_DB)
   db_pass=$(get_env PGPASSWORD POSTGRES_PASSWORD)
 
-  PGPASSWORD="$db_pass" psql -h "$db_host" -U "$db_user" -d "$db_name" -c '\q' >/dev/null 2>&1
+  PGPASSWORD="$db_pass" psql "sslmode=prefer host=$db_host user=$db_user dbname=$db_name" -c '\q' >/dev/null 2>&1
 }
 
 
