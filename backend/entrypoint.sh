@@ -13,17 +13,25 @@ get_env() {
 }
 
 check_postgres() {
-  local db_host
-  local db_user
-  local db_name
-  local db_pass
-
-  db_host=$(get_env PGHOST)
-  db_user=$(get_env PGUSER POSTGRES_USER)
-  db_name=$(get_env PGDATABASE POSTGRES_DB)
-  db_pass=$(get_env PGPASSWORD POSTGRES_PASSWORD)
-
-  PGPASSWORD="$db_pass" psql "sslmode=prefer host=$db_host user=$db_user dbname=$db_name" -c '\q' >/dev/null 2>&1
+  python -c "
+import sys, os
+try:
+    import psycopg2
+    conn = psycopg2.connect(
+        host=os.environ.get('PGHOST', ''),
+        port=int(os.environ.get('PGPORT', 5432)),
+        dbname=os.environ.get('POSTGRES_DB') or os.environ.get('PGDATABASE', ''),
+        user=os.environ.get('POSTGRES_USER') or os.environ.get('PGUSER', ''),
+        password=os.environ.get('POSTGRES_PASSWORD') or os.environ.get('PGPASSWORD', ''),
+        sslmode=os.environ.get('PGSSLMODE', 'prefer'),
+        connect_timeout=5
+    )
+    conn.close()
+    sys.exit(0)
+except Exception as e:
+    print(e, file=sys.stderr)
+    sys.exit(1)
+" 2>/dev/null
 }
 
 
